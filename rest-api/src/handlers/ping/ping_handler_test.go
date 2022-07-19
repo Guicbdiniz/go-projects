@@ -10,7 +10,9 @@ func TestPing(t *testing.T) {
 	request := httptest.NewRequest("POST", "/ping", nil)
 	responseRecorder := httptest.NewRecorder()
 
-	Ping(responseRecorder, request)
+	handler := PingHandler{}
+
+	handler.ServeHTTP(responseRecorder, request)
 
 	response := responseRecorder.Result()
 
@@ -22,7 +24,7 @@ func TestPing(t *testing.T) {
 	request = httptest.NewRequest("GET", "/ping", nil)
 	responseRecorder = httptest.NewRecorder()
 
-	Ping(responseRecorder, request)
+	handler.ServeHTTP(responseRecorder, request)
 
 	response = responseRecorder.Result()
 

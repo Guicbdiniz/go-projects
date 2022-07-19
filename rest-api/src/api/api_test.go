@@ -4,10 +4,20 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	_ "github.com/lib/pq"
 )
 
+const databaseTestingUrl = "postgresql://api_tester:password@localhost:5432/test_api"
+
 func TestCreateAPI(t *testing.T) {
-	api := CreateAPI()
+	api, err := CreateAPI(databaseTestingUrl)
+
+	if err != nil {
+		t.Fatalf("Error captured while creating API: %s", err.Error())
+	}
+
+	defer api.CloseDBConnection()
 
 	request := httptest.NewRequest("GET", "/ping", nil)
 	responseRecorder := httptest.NewRecorder()

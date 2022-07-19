@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/Guicbdiniz/go-projects/rest-api/handlers/ping"
@@ -8,11 +9,7 @@ import (
 
 type API struct {
 	serveMux *http.ServeMux
-}
-
-// Register the handler function for the given pattern in the ServeMux.
-func (api *API) HandleFunc(pattern string, handler func(http.ResponseWriter, *http.Request)) {
-	api.serveMux.HandleFunc(pattern, handler)
+	db       *sql.DB
 }
 
 // Register the handler for the given pattern in the ServeMux.
@@ -25,11 +22,22 @@ func (api *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	api.serveMux.ServeHTTP(w, r)
 }
 
-func CreateAPI() *API {
+func (api *API) CloseDBConnection() error {
+	return api.db.Close()
+}
+
+func CreateAPI(postgreUrl string) (*API, error) {
+	db, err := sql.Open("postgres", postgreUrl)
+
+	if err != nil {
+		return &API{}, err
+	}
+
 	api := API{}
 	api.serveMux = http.NewServeMux()
+	api.db = db
 
-	api.HandleFunc("/ping", ping.Ping)
+	api.Handle("/ping", ping.CreatePingHandler(db))
 
-	return &api
+	return &api, nil
 }
