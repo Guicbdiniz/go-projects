@@ -7,6 +7,8 @@ import (
 	"github.com/Guicbdiniz/go-projects/rest-api/handlers/ping"
 )
 
+const DatabaseTestingUrl = "postgresql://api_tester:password@localhost:5432/test_api"
+
 type API struct {
 	serveMux *http.ServeMux
 	db       *sql.DB

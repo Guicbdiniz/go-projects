@@ -5,17 +5,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/Guicbdiniz/go-projects/rest-api/utils"
+
 	_ "github.com/lib/pq"
 )
 
-const databaseTestingUrl = "postgresql://api_tester:password@localhost:5432/test_api"
-
 func TestCreateAPI(t *testing.T) {
-	api, err := CreateAPI(databaseTestingUrl)
+	api, err := CreateAPI(DatabaseTestingUrl)
 
-	if err != nil {
-		t.Fatalf("Error captured while creating API: %s", err.Error())
-	}
+	utils.CheckTestError(t, err, "Error captured while creating API")
 
 	defer api.CloseDBConnection()
 
@@ -26,9 +24,6 @@ func TestCreateAPI(t *testing.T) {
 
 	response := responseRecorder.Result()
 
-	if response.StatusCode != http.StatusOK {
-		t.Fatalf("Ping request did not return the correct status code. Expected %d, got %d",
-			http.StatusAccepted, response.StatusCode)
-	}
+	utils.AssertEqual(t, http.StatusOK, response.StatusCode, "Ping request did not return the correct status code")
 
 }
