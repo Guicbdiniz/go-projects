@@ -1,6 +1,9 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
 
 type User struct {
 	ID       int    `json:"id"`
@@ -20,9 +23,33 @@ func (user User) SaveUser(db *sql.DB) error {
 	return err
 }
 
-// func ReadUserByUsername(username string, db *sql.DB) (User, error) {}
+func ReadUserByUsername(username string, db *sql.DB) (User, error) {
+	q := `SELECT id, username FROM users WHERE username=$1`
 
-// func ReadUserByID(id int, db *sql.DB) (User, error) {}
+	rows, err := db.Query(q, username)
+
+	if err != nil {
+		return User{}, err
+	}
+
+	isThereResult := rows.Next()
+
+	if !isThereResult {
+		return User{}, fmt.Errorf("no user with username %s was found", username)
+	}
+
+	var selectedUsername string
+	var id int
+	err = rows.Scan(&id, &selectedUsername)
+
+	if err != nil {
+		return User{}, err
+	}
+
+	user := User{ID: id, Username: selectedUsername, Password: ""}
+
+	return user, nil
+}
 
 func ReadAllUsers(db *sql.DB) ([]User, error) {
 	users := make([]User, 0)
@@ -51,5 +78,3 @@ func ReadAllUsers(db *sql.DB) ([]User, error) {
 // func (user User) UpdateUser(db *sql.DB) error {}
 
 // func DeleteUserByUsername(username string, db *sql.DB) error {}
-
-// func DeleteUserById(id int, db *sql.DB) error {}

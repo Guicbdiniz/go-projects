@@ -35,6 +35,34 @@ func (h UserHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h UserHandler) handleGetRequest(res http.ResponseWriter, req *http.Request) {
+	requestParams := req.URL.Query()
+
+	if requestParams.Has("username") {
+		h.handleGetOneUserRequest(res, req, requestParams.Get("username"))
+	} else {
+		h.handleGetAllUsersRequest(res, req)
+	}
+}
+
+func (h UserHandler) handleGetOneUserRequest(res http.ResponseWriter, req *http.Request, username string) {
+	user, err := models.ReadUserByUsername(username, h.db)
+
+	if err != nil {
+		utils.SendJsonErrorResponse(res, http.StatusInternalServerError, err)
+		return
+	}
+
+	jsonResponse, err := utils.MarshalJsonResponse[models.User](user)
+
+	if err != nil {
+		utils.SendJsonErrorResponse(res, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.SendJsonResponse(res, http.StatusOK, jsonResponse)
+}
+
+func (h UserHandler) handleGetAllUsersRequest(res http.ResponseWriter, req *http.Request) {
 	users, err := models.ReadAllUsers(h.db)
 
 	if err != nil {

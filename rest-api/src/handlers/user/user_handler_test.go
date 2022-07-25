@@ -54,6 +54,7 @@ func TestUserHandler(t *testing.T) {
 
 	testGetAllUsers(t, db, handler)
 	testCreateNewUser(t, db, handler)
+	testGetOneUser(t, db, handler)
 }
 
 func testGetAllUsers(t *testing.T, db *sql.DB, handler UserHandler) {
@@ -93,6 +94,29 @@ func testCreateNewUser(t *testing.T, db *sql.DB, handler UserHandler) {
 	jsonBody, err := utils.UnmarshalJsonResponse[models.User](body)
 	utils.CheckTestError(t, err, "Error captured while unsmarshiling users")
 
-	utils.AssertEqual(t, "test_user", jsonBody.Data.Username, "GET request to /user did not return correct error text")
-	utils.AssertEqual(t, "", jsonBody.ErrorText, "GET request to /user did not return correct error text")
+	utils.AssertEqual(t, "test_user", jsonBody.Data.Username, "POST request to /user did not return correct error text")
+	utils.AssertEqual(t, "", jsonBody.ErrorText, "POST request to /user did not return correct error text")
+}
+
+func testGetOneUser(t *testing.T, db *sql.DB, handler UserHandler) {
+	request := httptest.NewRequest(http.MethodGet, "/user", nil)
+	responseRecorder := httptest.NewRecorder()
+
+	requestQueries := request.URL.Query()
+	requestQueries.Add("username", "guidi")
+	request.URL.RawQuery = requestQueries.Encode()
+
+	handler.ServeHTTP(responseRecorder, request)
+	response := responseRecorder.Result()
+
+	utils.AssertEqual(t, http.StatusOK, response.StatusCode, "GET request to /user?username=guidi did not return the correct status")
+
+	body, err := io.ReadAll(response.Body)
+	utils.CheckTestError(t, err, "Error captured while reading a response")
+
+	jsonBody, err := utils.UnmarshalJsonResponse[models.User](body)
+	utils.CheckTestError(t, err, "Error captured while unsmarshiling users")
+
+	utils.AssertEqual(t, "guidi", jsonBody.Data.Username, "GET request to /user?username=guidi did not return correct error text")
+	utils.AssertEqual(t, "", jsonBody.ErrorText, "GET request to /user?username=guidi did not return correct error text")
 }
