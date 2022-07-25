@@ -5,9 +5,8 @@ import (
 	"net/http"
 
 	"github.com/Guicbdiniz/go-projects/rest-api/handlers/ping"
+	"github.com/Guicbdiniz/go-projects/rest-api/handlers/user"
 )
-
-const DatabaseTestingUrl = "postgresql://api_tester:password@localhost:5432/test_api"
 
 type API struct {
 	serveMux *http.ServeMux
@@ -40,6 +39,7 @@ func CreateAPI(postgreUrl string) (*API, error) {
 	api.db = db
 
 	api.Handle("/ping", ping.CreatePingHandler(db))
+	api.Handle("/user", user.CreateUserHandler(db))
 
 	return &api, nil
 }

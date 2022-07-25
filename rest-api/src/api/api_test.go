@@ -5,13 +5,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/Guicbdiniz/go-projects/rest-api/configs"
 	"github.com/Guicbdiniz/go-projects/rest-api/utils"
 
 	_ "github.com/lib/pq"
 )
 
 func TestCreateAPI(t *testing.T) {
-	api, err := CreateAPI(DatabaseTestingUrl)
+	api, err := CreateAPI(configs.DatabaseTestingUrl)
 
 	utils.CheckTestError(t, err, "Error captured while creating API")
 

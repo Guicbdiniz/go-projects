@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Guicbdiniz/go-projects/rest-api/api"
+	"github.com/Guicbdiniz/go-projects/rest-api/configs"
 	"github.com/Guicbdiniz/go-projects/rest-api/db/queries"
 	"github.com/Guicbdiniz/go-projects/rest-api/models"
 	"github.com/Guicbdiniz/go-projects/rest-api/utils"
@@ -19,7 +19,7 @@ import (
 func setUpTestDBForUserHandler(t *testing.T) *sql.DB {
 	t.Log("set up test case")
 
-	db, err := sql.Open("postgres", api.DatabaseTestingUrl)
+	db, err := sql.Open("postgres", configs.DatabaseTestingUrl)
 	utils.CheckTestError(t, err, "Error captured while creating a db")
 
 	err = queries.CreateUsersTable(db)

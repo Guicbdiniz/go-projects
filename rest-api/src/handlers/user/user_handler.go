@@ -20,7 +20,7 @@ func CreateUserHandler(db *sql.DB) UserHandler {
 	}
 }
 
-func (h *UserHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
+func (h UserHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	default:
 		utils.SendTextResponse(res, http.StatusMethodNotAllowed, "Invalid method")
@@ -34,7 +34,7 @@ func (h *UserHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func (h *UserHandler) handleGetRequest(res http.ResponseWriter, req *http.Request) {
+func (h UserHandler) handleGetRequest(res http.ResponseWriter, req *http.Request) {
 	users, err := models.ReadAllUsers(h.db)
 
 	if err != nil {
@@ -52,7 +52,7 @@ func (h *UserHandler) handleGetRequest(res http.ResponseWriter, req *http.Reques
 	utils.SendJsonResponse(res, http.StatusOK, jsonResponse)
 }
 
-func (h *UserHandler) handlePostRequest(res http.ResponseWriter, req *http.Request) {
+func (h UserHandler) handlePostRequest(res http.ResponseWriter, req *http.Request) {
 	body, err := io.ReadAll(req.Body)
 
 	if err != nil {
