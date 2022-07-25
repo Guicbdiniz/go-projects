@@ -4,7 +4,8 @@ A colletion of Golang projects that I've developed by myself.
 
 ## Roadmap
 
-- [ ] REST API with PostgreSQL
+- [ ] "Vanila" REST API
+- [ ] Gin REST API
 - [ ] gRPC API
 - [ ] Web Scrapper
 
