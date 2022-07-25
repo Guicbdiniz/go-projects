@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/Guicbdiniz/go-projects/rest-api/api"
@@ -49,10 +50,16 @@ func TestUserHandler(t *testing.T) {
 	db := setUpTestDBForUserHandler(t)
 	defer tearDownUserHandlerTestCase(t, db)
 
-	request := httptest.NewRequest("GET", "/user", nil)
+	handler := CreateUserHandler(db)
+
+	testGetAllUsers(t, db, handler)
+	testCreateNewUser(t, db, handler)
+}
+
+func testGetAllUsers(t *testing.T, db *sql.DB, handler UserHandler) {
+	request := httptest.NewRequest(http.MethodGet, "/user", nil)
 	responseRecorder := httptest.NewRecorder()
 
-	handler := CreateUserHandler(db)
 	handler.ServeHTTP(responseRecorder, request)
 	response := responseRecorder.Result()
 
@@ -67,4 +74,25 @@ func TestUserHandler(t *testing.T) {
 	utils.AssertEqual(t, 1, len(jsonBody.Data), "GET request to /user did not return correct body")
 	utils.AssertEqual(t, jsonBody.ErrorText, "", "GET request to /user did not return correct error text")
 	utils.AssertEqual(t, jsonBody.Data[0].Username, "guidi", "GET request to /user did not return correct body")
+}
+
+func testCreateNewUser(t *testing.T, db *sql.DB, handler UserHandler) {
+	requestBody := `{"username":"test_user","password":"password"}`
+
+	request := httptest.NewRequest(http.MethodPost, "/user", strings.NewReader(requestBody))
+	responseRecorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(responseRecorder, request)
+	response := responseRecorder.Result()
+
+	utils.AssertEqual(t, http.StatusCreated, response.StatusCode, "POST request to /user did not return the correct status")
+
+	body, err := io.ReadAll(response.Body)
+	utils.CheckTestError(t, err, "Error captured while reading a response")
+
+	jsonBody, err := utils.UnmarshalJsonResponse[models.User](body)
+	utils.CheckTestError(t, err, "Error captured while unsmarshiling users")
+
+	utils.AssertEqual(t, "test_user", jsonBody.Data.Username, "GET request to /user did not return correct error text")
+	utils.AssertEqual(t, "", jsonBody.ErrorText, "GET request to /user did not return correct error text")
 }

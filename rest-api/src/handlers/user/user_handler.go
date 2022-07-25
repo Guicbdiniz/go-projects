@@ -2,7 +2,8 @@ package user
 
 import (
 	"database/sql"
-	"log"
+	"encoding/json"
+	"io"
 	"net/http"
 
 	"github.com/Guicbdiniz/go-projects/rest-api/models"
@@ -13,32 +14,74 @@ type UserHandler struct {
 	db *sql.DB
 }
 
-func (h UserHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-	switch req.Method {
-	case http.MethodGet:
-		users, err := models.ReadAllUsers(h.db)
-
-		if err != nil {
-			log.Println(err.Error())
-			utils.SendJsonErrorResponse(res, http.StatusInternalServerError, err)
-		}
-
-		jsonResponse, err := utils.MarshalJsonResponse[[]models.User](users)
-
-		if err != nil {
-			utils.SendJsonErrorResponse(res, http.StatusInternalServerError, err)
-		}
-
-		utils.SendJsonResponse(res, http.StatusOK, jsonResponse)
-		return
-	default:
-		utils.SendTextResponse(res, http.StatusMethodNotAllowed, "Invalid method")
-		return
-	}
-}
-
 func CreateUserHandler(db *sql.DB) UserHandler {
 	return UserHandler{
 		db: db,
 	}
+}
+
+func (h *UserHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	default:
+		utils.SendTextResponse(res, http.StatusMethodNotAllowed, "Invalid method")
+		return
+	case http.MethodGet:
+		h.handleGetRequest(res, req)
+		return
+	case http.MethodPost:
+		h.handlePostRequest(res, req)
+		return
+	}
+}
+
+func (h *UserHandler) handleGetRequest(res http.ResponseWriter, req *http.Request) {
+	users, err := models.ReadAllUsers(h.db)
+
+	if err != nil {
+		utils.SendJsonErrorResponse(res, http.StatusInternalServerError, err)
+		return
+	}
+
+	jsonResponse, err := utils.MarshalJsonResponse[[]models.User](users)
+
+	if err != nil {
+		utils.SendJsonErrorResponse(res, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.SendJsonResponse(res, http.StatusOK, jsonResponse)
+}
+
+func (h *UserHandler) handlePostRequest(res http.ResponseWriter, req *http.Request) {
+	body, err := io.ReadAll(req.Body)
+
+	if err != nil {
+		utils.SendJsonErrorResponse(res, http.StatusInternalServerError, err)
+		return
+	}
+
+	var requestBody CreateUserRequestBody
+	err = json.Unmarshal(body, &requestBody)
+
+	if err != nil {
+		utils.SendJsonErrorResponse(res, http.StatusBadRequest, err)
+		return
+	}
+
+	user := models.User{Username: requestBody.Username, Password: requestBody.Password}
+	err = user.SaveUser(h.db)
+
+	if err != nil {
+		utils.SendJsonErrorResponse(res, http.StatusInternalServerError, err)
+		return
+	}
+
+	jsonResponse, err := utils.MarshalJsonResponse[models.User](user)
+
+	if err != nil {
+		utils.SendJsonErrorResponse(res, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.SendJsonResponse(res, http.StatusCreated, jsonResponse)
 }
