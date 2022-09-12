@@ -10,6 +10,7 @@ func AddPingRoute(api *gin.Engine) error {
 	routerGroup := api.Group("/ping")
 
 	routerGroup.GET("", handlePing)
+	routerGroup.GET("/", handlePing)
 
 	return nil
 }
