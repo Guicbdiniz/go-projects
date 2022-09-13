@@ -7,16 +7,18 @@ Go standard library definitely has all the tools necessary for the creation of a
 ### Project specifications:
 
 - It follows the [Standard Go Project Layout](https://github.com/golang-standards/project-layout), as I decided to test it.
-- It uses [Docker](https://www.docker.com/) to run the application in a container.
+- It uses [Docker](https://www.docker.com/) and [Compose](https://docs.docker.com/compose/) to run the application in containers.
 
-### Installation 
+### Usage 
 
-- Build the Docker image with:  
+- `Docker` must be installed with the `compose-plugin`. 
+
+- Start the containers with:  
     ```
-        docker build . -f build/Dockerfile --tag gin-server
+        docker compose -f ./deployments/compose.yaml up
     ```
 
-- Run the image in a Docker container with:  
+- The API will be available on `localhost:3001`. Test it with:
     ```
-        docker run -p 3001:3001 -e GIN_MODE='release' gin-server
+        curl localhost:3001/ping
     ```

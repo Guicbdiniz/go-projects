@@ -1,0 +1,10 @@
+services:
+  api:
+    build: 
+      context: ../
+      dockerfile: ./build/Dockerfile
+    container_name: gin-server
+    environment:
+      - GIN_MODE=release
+    ports:
+      - 3001:3001
