@@ -22,3 +22,10 @@ Go standard library definitely has all the tools necessary for the creation of a
     ```
         curl localhost:3001/ping
     ```
+
+### Next steps
+
+- [ ] Add logging to the API.
+- [ ] Create a NoSQL service with a named volume connected to it.
+- [ ] Connect the API to the NoSQL service.
+- [ ] Create new routes.
