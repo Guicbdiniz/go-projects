@@ -15,17 +15,17 @@ Go standard library definitely has all the tools necessary for the creation of a
 
 - Start the containers with:  
     ```
-        docker compose -f ./deployments/compose.yaml up
+    docker compose -f ./deployments/compose.yaml up --build
     ```
 
 - The API will be available on `localhost:3001`. Test it with:
     ```
-        curl localhost:3001/ping
+    curl localhost:3001/ping
     ```
 
 ### Next steps
 
-- [ ] Add logging to the API.
+- [x] Add logging to the API.
 - [ ] Create a NoSQL service with a named volume connected to it.
 - [ ] Connect the API to the NoSQL service.
 - [ ] Create new routes.
