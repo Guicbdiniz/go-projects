@@ -8,6 +8,8 @@ import (
 func CreateAPI() (*gin.Engine, error) {
 	api := gin.New()
 
+	api.Use(gin.Logger())
+
 	ping.AddPingRoute(api)
 
 	return api, nil
