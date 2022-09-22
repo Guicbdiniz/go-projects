@@ -11,7 +11,7 @@ Go standard library definitely has all the tools necessary for the creation of a
 
 ### Usage 
 
-- `Docker` must be installed with the `compose-plugin`. 
+- **Docker** must be installed along with the **compose-plugin**. 
 
 - Start the containers with:  
     ```
