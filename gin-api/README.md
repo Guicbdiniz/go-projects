@@ -26,6 +26,6 @@ Go standard library definitely has all the tools necessary for the creation of a
 ### Next steps
 
 - [x] Add logging to the API.
-- [ ] Create a NoSQL service with a named volume connected to it.
+- [x] Create a NoSQL service with a named volume connected to it.
 - [ ] Connect the API to the NoSQL service.
 - [ ] Create new routes.
