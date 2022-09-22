@@ -1,6 +1,6 @@
 services:
   api:
-    build: 
+    build:
       context: ../
       dockerfile: ./build/Dockerfile
     container_name: gin-server
@@ -8,3 +8,5 @@ services:
       - GIN_MODE=release
     ports:
       - 3001:3001
+    volumes:
+      - "..:/app"
